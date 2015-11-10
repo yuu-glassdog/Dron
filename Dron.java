@@ -12,7 +12,7 @@ import javax.imageio.ImageIO;
 import javax.swing.JApplet;
 
 /*
-<applet code="Dron.class" width="400" height="400">
+<applet code="Dron.class" width="400" height="500">
 </applet>
 */
 
@@ -66,7 +66,7 @@ public class Dron extends JApplet implements Runnable, KeyListener {
 		width = size.width; height = size.height;
 		img  = createImage(width, height);
 		offg = img.getGraphics();
-		img2 = getImage(getCodeBase(), "keymap.jpg");
+		img2 = getImage(getCodeBase(), "keymap.png");
 	}
 
 	@Override
@@ -106,6 +106,7 @@ public class Dron extends JApplet implements Runnable, KeyListener {
 		offg.drawString("Right: J(←), K(↓), I(↑), L(→)", 2*block, block*(ySize+9));
 		
 		g.drawImage(img, 0, 0, this);  // 一気に画面にコピー
+		g.drawImage(img2, 0, block*(ySize+12), this);
 	}
 
 	public void run() {
