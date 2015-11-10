@@ -8,6 +8,10 @@ import java.awt.event.KeyListener;
 
 import javax.swing.JApplet;
 
+// bgm
+import java.applet.AudioClip;
+import java.applet.Applet;
+
 public class Dron extends JApplet implements Runnable, KeyListener {
 	private Color state[][];
 	private int xSize, ySize;
@@ -23,7 +27,10 @@ public class Dron extends JApplet implements Runnable, KeyListener {
 	private Image img;     // オフスクリーンイメージ
 	private Graphics offg; // オフスクリーン用のグラフィックス
 	private int width, height;
-
+	
+	// bgm
+	//AudioClip bgm;
+	
 	private void initialize() {
 		int i,j;
 
@@ -50,6 +57,9 @@ public class Dron extends JApplet implements Runnable, KeyListener {
 		state = new Color[xSize][ySize];
 		message = "Game started!";
 		font = new Font("Monospaced", Font.PLAIN, 12);
+		// bgm
+		AudioClip bgm = getAudioClip(getDocumentBase(), "menuettm.mid");
+		bgm.play();
 		setFocusable(true);
 		addKeyListener(this);
 		Dimension size = getSize();
