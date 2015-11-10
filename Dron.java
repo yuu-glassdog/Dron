@@ -22,6 +22,7 @@ public class Dron extends JApplet implements Runnable, KeyListener {
 	private Thread thread;
 	private String message;
 	private Font font;
+	private int bKeyL = 'D', bKeyR = 'I';	// １つ前に押したキー
 
 	private Image img;     	// オフスクリーンイメージ
 	private Graphics offg; 	// オフスクリーン用のグラフィックス
@@ -148,15 +149,24 @@ public class Dron extends JApplet implements Runnable, KeyListener {
 	
 	public void keyPressed(KeyEvent e) {
 		int key = e.getKeyCode();
+		
 		switch (key) {
-		case 'S':  dxL =-1; dyL = 0; break;	// 1P左
-		case 'D':  dxL = 0; dyL = 1; break;	// 1P下
-		case 'E':  dxL = 0; dyL =-1; break;	// 1P上
-		case 'F':  dxL = 1; dyL = 0; break;	// 1P右
-		case 'J':  dxR =-1; dyR = 0; break;	// 2P左
-		case 'K':  dxR = 0; dyR = 1; break;	// 2P下
-		case 'I':  dxR = 0; dyR =-1; break;	// 2P上
-		case 'L':  dxR = 1; dyR = 0; break;	// 2P右
+		case 'S':  if ( bKeyL == 'F' ) { break; }	// 逆向き入力の即死回避
+				   else { dxL =-1; dyL = 0; bKeyL = key; break;	} 	// 1P左
+		case 'D':  if ( bKeyL == 'E' ) { break; }  
+		           else { dxL = 0; dyL = 1; bKeyL = key; break; }	// 1P下
+		case 'E':  if ( bKeyL == 'D' ) { break; }
+		           else { dxL = 0; dyL =-1; bKeyL = key; break;	}	// 1P上
+		case 'F':  if ( bKeyL == 'S' ) { break; }
+		           else { dxL = 1; dyL = 0; bKeyL = key; break;	}	// 1P右
+		case 'J':  if ( bKeyR == 'L' ) { break; }
+		           else { dxR =-1; dyR = 0; bKeyR = key; break; }	// 2P左
+		case 'K':  if ( bKeyR == 'I' ) { break; }
+		           else { dxR = 0; dyR = 1; bKeyR = key; break; }	// 2P下
+		case 'I':  if ( bKeyR == 'K' ) { break; }
+		           else { dxR = 0; dyR =-1; bKeyR = key; break; }	// 2P上
+		case 'L':  if ( bKeyR == 'J' ) { break; }
+		           else { dxR = 1; dyR = 0; bKeyR = key; break; }	// 2P右
 		}
 	}
 
