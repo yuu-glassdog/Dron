@@ -5,6 +5,7 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.Random; //add
 
 import javax.swing.JApplet;
 
@@ -13,15 +14,20 @@ public class Dron extends JApplet implements Runnable, KeyListener {
 	private int xSize, ySize;
 	private int block;
 	private int xL, yL, xR, yR;
+	private int xA,yA;
+	private int dxA, dyA;
 	private int dxL, dyL, dxR, dyR;
 	private boolean liveL, liveR;
 	private int countL, countR;
 	private Thread thread;
 	private String message;
 	private Font font;
+	private int turn_a = 1;
+	private int turn_b = 1;
+	private int num[] = {-1,1,0};
 
-	private Image img;     // オフスクリーンイメージ
-	private Graphics offg; // オフスクリーン用のグラフィックス
+	private Image img;     // �I�t�X�N���[���C���[�W
+	private Graphics offg; // �I�t�X�N���[���p�̃O���t�B�b�N�X
 	private int width, height;
 
 	private void initialize() {
@@ -38,6 +44,7 @@ public class Dron extends JApplet implements Runnable, KeyListener {
 		}
 		xL = yL = 2;
 		xR = xSize-3; yR = ySize-3;
+		xA = yA = 40;
 		dxL = dxR = 0;
 		dyL = 1; dyR = -1;
 		liveL = liveR = true;
@@ -75,10 +82,10 @@ public class Dron extends JApplet implements Runnable, KeyListener {
 
 	@Override
 	public void paint(Graphics g) {
-		// 全体を背景色で塗りつぶす。
+		// �S�̂��w�i�F�œh���Ԃ��B
 		offg.clearRect(0, 0, width, height); 
 		
-		 // 一旦、別の画像（オフスクリーン）に書き込む
+		 // ���U�A�ʂ̉摜�i�I�t�X�N���[���j�ɏ�������
 		int i, j;
 		for (i=0; i<xSize; i++) {
 			for (j=0; j<ySize; j++) {
@@ -94,7 +101,7 @@ public class Dron extends JApplet implements Runnable, KeyListener {
 		offg.setColor(Color.BLUE.darker());
 		offg.drawString("Right: H(L), J(D), K(U), L(R)", 2*block, block*(ySize+9));
 	
-		g.drawImage(img, 0, 0, this);  // 一気に画面にコピー
+		g.drawImage(img, 0, 0, this);  // ���C�ɉ��ʂɃR�s�[
 	}
 
 	public void run() {
@@ -102,7 +109,21 @@ public class Dron extends JApplet implements Runnable, KeyListener {
 		while (thisThread==thread) {
 			initialize();
 			requestFocus();
+			/*add
+			Random rnd = new Random();
+	        int ran = rnd.nextInt(2);
+	        */
 			while (liveL&&liveR) {
+				//
+				xA += dxA; yA += dyA;
+				
+				if (state[xA][yA]!=Color.WHITE) {
+					xA -= dxA; yA -= dyA;
+					state[xA][yA] = Color.YELLOW.darker();
+				}
+				state[xA][yA] = Color.BLACK;
+				//
+				
 				xL += dxL; yL += dyL;
 				if (state[xL][yL]!=Color.WHITE) {
 					liveL = false;
@@ -143,6 +164,17 @@ public class Dron extends JApplet implements Runnable, KeyListener {
 	
 	public void keyPressed(KeyEvent e) {
 		int key = e.getKeyCode();
+		//add
+		Random rnd = new Random();
+		dxA = num[rnd.nextInt(3)];
+        if(dxA == 0){
+        	dyA = num[rnd.nextInt(2)];
+        }
+        else{
+        	dyA = 0;
+        }
+        //dyA = num[rnd.nextInt(4)];
+        //
 		switch (key) {
 		case 'A':  dxL =-1; dyL = 0; break;
 		case 'S':  dxL = 0; dyL = 1; break;
@@ -152,6 +184,16 @@ public class Dron extends JApplet implements Runnable, KeyListener {
 		case 'J':  dxR = 0; dyR = 1; break;
 		case 'K':  dxR = 0; dyR =-1; break;
 		case 'L':  dxR = 1; dyR = 0; break;
+		/*
+		case 'A':  turn_a++; dxL =-1*turn_a; dyL = 0; break;
+		case 'S':  turn_a++; dxL = 0; dyL = 1*turn_a;  break;
+		case 'D':  turn_a++; dxL = 0; dyL =-1*turn_a;  break;
+		case 'F':  turn_a++; dxL = 1*turn_a; dyL = 0;  break;
+		case 'H':  turn_b += 0.2; dxR =-1*turn_b; dyR = 0;  break;
+		case 'J':  turn_b += 0.2; dxR = 0; dyR = 1*turn_b;  break;
+		case 'K':  turn_b += 0.2; dxR = 0; dyR =-1*turn_b;  break;
+		case 'L':  turn_b += 0.2; dxR = 1*turn_b; dyR = 0;  break;
+		*/
 		}
 	}
 
