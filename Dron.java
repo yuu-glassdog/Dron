@@ -5,7 +5,10 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.image.BufferedImage;
+import java.io.File;
 
+import javax.imageio.ImageIO;
 import javax.swing.JApplet;
 
 public class Dron extends JApplet implements Runnable, KeyListener {
@@ -20,8 +23,9 @@ public class Dron extends JApplet implements Runnable, KeyListener {
 	private String message;
 	private Font font;
 
-	private Image img;     // オフスクリーンイメージ
-	private Graphics offg; // オフスクリーン用のグラフィックス
+	private Image img;     	// オフスクリーンイメージ
+	private Graphics offg; 	// オフスクリーン用のグラフィックス
+	private Image img2;		// キーマップイメージ
 	private int width, height;
 
 	private void initialize() {
@@ -56,6 +60,7 @@ public class Dron extends JApplet implements Runnable, KeyListener {
 		width = size.width; height = size.height;
 		img  = createImage(width, height);
 		offg = img.getGraphics();
+		img2 = getImage(getCodeBase(), "keymap.jpg");
 	}
 
 	@Override
@@ -89,11 +94,11 @@ public class Dron extends JApplet implements Runnable, KeyListener {
 		offg.setFont(font);
 		offg.setColor(Color.GREEN.darker());
 		offg.drawString(message, 2*block, block*(ySize+3));
-		offg.setColor(Color.RED.darker());
-		offg.drawString("Left:  S(L), D(D), E(U), F(R)", 2*block, block*(ySize+6));
-		offg.setColor(Color.BLUE.darker());
-		offg.drawString("Right: J(L), K(D), I(U), L(R)", 2*block, block*(ySize+9));
-	
+		offg.setColor(Color.RED);
+		offg.drawString("Left:  S(←), D(↓), E(↑), F(→)", 2*block, block*(ySize+6));
+		offg.setColor(Color.BLUE);
+		offg.drawString("Right: J(←), K(↓), I(↑), L(→)", 2*block, block*(ySize+9));
+		
 		g.drawImage(img, 0, 0, this);  // 一気に画面にコピー
 	}
 
@@ -144,14 +149,14 @@ public class Dron extends JApplet implements Runnable, KeyListener {
 	public void keyPressed(KeyEvent e) {
 		int key = e.getKeyCode();
 		switch (key) {
-		case 'S':  dxL =-1; dyL = 0; break;	// 左
-		case 'D':  dxL = 0; dyL = 1; break;	// 下
-		case 'E':  dxL = 0; dyL =-1; break;	// 上
-		case 'F':  dxL = 1; dyL = 0; break;	// 右
-		case 'J':  dxR =-1; dyR = 0; break;	// 左
-		case 'K':  dxR = 0; dyR = 1; break;	// 下
-		case 'I':  dxR = 0; dyR =-1; break;	// 上
-		case 'L':  dxR = 1; dyR = 0; break;	// 右
+		case 'S':  dxL =-1; dyL = 0; break;	// 1P左
+		case 'D':  dxL = 0; dyL = 1; break;	// 1P下
+		case 'E':  dxL = 0; dyL =-1; break;	// 1P上
+		case 'F':  dxL = 1; dyL = 0; break;	// 1P右
+		case 'J':  dxR =-1; dyR = 0; break;	// 2P左
+		case 'K':  dxR = 0; dyR = 1; break;	// 2P下
+		case 'I':  dxR = 0; dyR =-1; break;	// 2P上
+		case 'L':  dxR = 1; dyR = 0; break;	// 2P右
 		}
 	}
 
