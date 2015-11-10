@@ -11,6 +11,11 @@ import java.io.File;
 import javax.imageio.ImageIO;
 import javax.swing.JApplet;
 
+/*
+<applet code="Dron.class" width="400" height="400">
+</applet>
+*/
+
 public class Dron extends JApplet implements Runnable, KeyListener {
 	private Color state[][];
 	private int xSize, ySize;
@@ -22,7 +27,7 @@ public class Dron extends JApplet implements Runnable, KeyListener {
 	private Thread thread;
 	private String message;
 	private Font font;
-	private int bKeyL = 'D', bKeyR = 'I';	// １つ前に押したキー
+	private int bKeyL = 'D', bKeyR = 'I';	// １つ前に押したキー(最初の進行方向で初期化)
 
 	private Image img;     	// オフスクリーンイメージ
 	private Graphics offg; 	// オフスクリーン用のグラフィックス
@@ -151,7 +156,7 @@ public class Dron extends JApplet implements Runnable, KeyListener {
 		int key = e.getKeyCode();
 		
 		switch (key) {
-		case 'S':  if ( bKeyL == 'F' ) { break; }	// 逆向き入力の即死回避
+		case 'S':  if ( bKeyL == 'F' ) { break; }					// 逆向き入力の即死回避
 				   else { dxL =-1; dyL = 0; bKeyL = key; break;	} 	// 1P左
 		case 'D':  if ( bKeyL == 'E' ) { break; }  
 		           else { dxL = 0; dyL = 1; bKeyL = key; break; }	// 1P下
