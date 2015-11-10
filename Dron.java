@@ -7,7 +7,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
 import javax.swing.JApplet;
-// git test
+
 public class Dron extends JApplet implements Runnable, KeyListener {
 	private Color state[][];
 	private int xSize, ySize;
@@ -90,9 +90,9 @@ public class Dron extends JApplet implements Runnable, KeyListener {
 		offg.setColor(Color.GREEN.darker());
 		offg.drawString(message, 2*block, block*(ySize+3));
 		offg.setColor(Color.RED.darker());
-		offg.drawString("Left:  A(L), S(D), D(U), F(R)", 2*block, block*(ySize+6));
+		offg.drawString("Left:  S(L), D(D), E(U), F(R)", 2*block, block*(ySize+6));
 		offg.setColor(Color.BLUE.darker());
-		offg.drawString("Right: H(L), J(D), K(U), L(R)", 2*block, block*(ySize+9));
+		offg.drawString("Right: J(L), K(D), I(U), L(R)", 2*block, block*(ySize+9));
 	
 		g.drawImage(img, 0, 0, this);  // 一気に画面にコピー
 	}
@@ -144,14 +144,14 @@ public class Dron extends JApplet implements Runnable, KeyListener {
 	public void keyPressed(KeyEvent e) {
 		int key = e.getKeyCode();
 		switch (key) {
-		case 'A':  dxL =-1; dyL = 0; break;
-		case 'S':  dxL = 0; dyL = 1; break;
-		case 'D':  dxL = 0; dyL =-1; break;
-		case 'F':  dxL = 1; dyL = 0; break;
-		case 'H':  dxR =-1; dyR = 0; break;
-		case 'J':  dxR = 0; dyR = 1; break;
-		case 'K':  dxR = 0; dyR =-1; break;
-		case 'L':  dxR = 1; dyR = 0; break;
+		case 'S':  dxL =-1; dyL = 0; break;	// 左
+		case 'D':  dxL = 0; dyL = 1; break;	// 下
+		case 'E':  dxL = 0; dyL =-1; break;	// 上
+		case 'F':  dxL = 1; dyL = 0; break;	// 右
+		case 'J':  dxR =-1; dyR = 0; break;	// 左
+		case 'K':  dxR = 0; dyR = 1; break;	// 下
+		case 'I':  dxR = 0; dyR =-1; break;	// 上
+		case 'L':  dxR = 1; dyR = 0; break;	// 右
 		}
 	}
 
