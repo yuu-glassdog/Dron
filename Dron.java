@@ -5,6 +5,7 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.Random;
 
 import javax.swing.JApplet;
 
@@ -24,8 +25,15 @@ public class Dron extends JApplet implements Runnable, KeyListener {
 	private Font font;
 	private int bKeyL = 'D', bKeyR = 'I';	// １つ前に押したキー(最初の進行方向で初期化)
 
+	private int xA,yA;
+	private int dxA, dyA;
+	private int turn_a = 1;
+	private int turn_b = 1;
+	private int num[] = {-1,1,0};
+
 	private Image img;     // オフスクリーンイメージ
 	private Graphics offg; // オフスクリーン用のグラフィックス
+	private Image img2;		// キーマップイメージ
 	private int width, height;
 
 	// スタート画面表示
@@ -48,6 +56,7 @@ public class Dron extends JApplet implements Runnable, KeyListener {
 		}
 		xL = yL = 2;
 		xR = xSize-3; yR = ySize-3;
+		xA = yA = 40;
 		dxL = dxR = 0;
 		dyL = 1; dyR = -1;
 		liveL = liveR = true;
@@ -65,6 +74,7 @@ public class Dron extends JApplet implements Runnable, KeyListener {
 		width = size.width; height = size.height;
 		img  = createImage(width, height);
 		offg = img.getGraphics();
+		img2 = getImage(getCodeBase(), "keymap.png");
 	}
 
 	@Override
@@ -93,13 +103,13 @@ public class Dron extends JApplet implements Runnable, KeyListener {
 			offg.setFont(font);
 			offg.setColor(Color.BLACK);
 			offg.drawString(title, block*(xSize/3), block*(ySize/3));
-			
+
 			message = "Press the Enter";
 			font = new Font("Monospaced", Font.BOLD, 20);
 			offg.setFont(font);
 			offg.setColor(Color.RED);
 			offg.drawString(message, block*(xSize/40*9), block*(ySize/4*3));
-			
+
 			font = new Font("Monospaced", Font.PLAIN, 12);
 			offg.setFont(font);
 			offg.setColor(Color.RED.darker());
@@ -153,6 +163,7 @@ public class Dron extends JApplet implements Runnable, KeyListener {
 			offg.drawString("Right: J(←), K(↓), I(↑), L(→)", 2*block, block*(ySize+9));
 		}
 		g.drawImage(img, 0, 0, this);  // 一気に画面にコピー
+		g.drawImage(img2, 0, block*(ySize+12), this);
 	}
 
 	public void run() {
@@ -165,6 +176,15 @@ public class Dron extends JApplet implements Runnable, KeyListener {
 			if ( g_state == 1 ) {
 				bgm.loop();
 				while (liveL&&liveR) {
+
+					xA += dxA; yA += dyA;
+
+					if (state[xA][yA]!=Color.WHITE) {
+						xA -= dxA; yA -= dyA;
+						state[xA][yA] = Color.YELLOW.darker();
+					}
+					state[xA][yA] = Color.BLACK;
+
 					xL += dxL; yL += dyL;
 					if (state[xL][yL]!=Color.WHITE) {
 						liveL = false;
@@ -225,6 +245,14 @@ public class Dron extends JApplet implements Runnable, KeyListener {
 				g_state = 1;
 			}
 		} else if ( g_state == 1 ){
+			Random rnd = new Random();
+			dxA = num[rnd.nextInt(3)];
+			if(dxA == 0){
+				dyA = num[rnd.nextInt(2)];
+			}
+			else{
+				dyA = 0;
+			}
 			switch (key) {
 			case 'S':  if ( bKeyL == 'F' ) { break; }					// 逆向き入力の即死回避
 			else { dxL =-1; dyL = 0; bKeyL = key; break;	} 	// 1P左
