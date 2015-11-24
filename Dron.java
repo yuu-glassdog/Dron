@@ -10,19 +10,8 @@ import javax.swing.JApplet;
 
 // bgm
 import java.applet.AudioClip;
-import java.applet.Applet;
 
-// start
-import javax.swing.JButton;
-import javax.swing.JPanel;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.FlowLayout;
-import java.awt.Container;
-import java.awt.BorderLayout;
-
-
-public class Dron extends JApplet implements Runnable, KeyListener, ActionListener {
+public class Dron extends JApplet implements Runnable, KeyListener {
 	private Color state[][];
 	private int xSize, ySize;
 	private int block;
@@ -40,9 +29,9 @@ public class Dron extends JApplet implements Runnable, KeyListener, ActionListen
 	private int width, height;
 
 	// スタート画面表示
-	private int g_state;
-	private JPanel p_st;
-	private JButton bt_st;
+	private String title;
+	private int g_state;  // ゲームの状態 0:ゲーム開始前 1:ゲーム中 2:ゲーム終了
+
 
 	private void initialize() {
 		int i,j;
@@ -54,6 +43,7 @@ public class Dron extends JApplet implements Runnable, KeyListener, ActionListen
 			state[i][0] = state[i][ySize-1] = Color.BLACK;
 			for (j=1;j<ySize-1;j++) {
 				state[i][j] = Color.WHITE;
+
 			}
 		}
 		xL = yL = 2;
@@ -65,24 +55,10 @@ public class Dron extends JApplet implements Runnable, KeyListener, ActionListen
 
 	@Override
 	public void init() {
-		System.out.println("a");
 		xSize = ySize = 80;
 		block = 4;
 		state = new Color[xSize][ySize];
 		g_state = 0;
-		message = "Game started!";
-		font = new Font("Monospaced", Font.PLAIN, 12);
-		
-		System.out.println("aa");
-		p_st = new JPanel();
-		p_st.setLayout(null);
-		bt_st = new JButton("Start");
-		bt_st.setBounds(50, 50, 100, 50);
-		bt_st.addActionListener(this);
-		p_st.add(bt_st);
-		Container contentPane = getContentPane();
-		contentPane.add(p_st, BorderLayout.CENTER);
-
 		setFocusable(true);
 		addKeyListener(this);
 		Dimension size = getSize();
@@ -91,20 +67,9 @@ public class Dron extends JApplet implements Runnable, KeyListener, ActionListen
 		offg = img.getGraphics();
 	}
 
-	public void actionPerformed(ActionEvent e) {
-		System.out.println("b");
-		if ( e.getSource() == bt_st ) {
-			g_state = 1;
-			remove(p_st);
-			start();
-			//			thread = new Thread(this);
-			//			thread.start();
-		}
-	}
-
 	@Override
 	public void start() {
-		if (thread==null && g_state == 1) {
+		if (thread==null) {
 			thread = new Thread(this);
 			thread.start();
 		}
@@ -112,7 +77,6 @@ public class Dron extends JApplet implements Runnable, KeyListener, ActionListen
 
 	@Override
 	public void stop() {
-		System.out.println("stop");
 		if (thread != null) {
 			thread = null;
 		}
@@ -120,17 +84,31 @@ public class Dron extends JApplet implements Runnable, KeyListener, ActionListen
 
 	@Override
 	public void paint(Graphics g) {
-		System.out.println("c");
+		// 全体を背景色で塗りつぶす。
+		offg.clearRect(0, 0, width, height);
 		if ( g_state == 0 ) {
+			// タイトル表示
+			title = "どろん";
+			font = new Font("Monospaced", Font.BOLD, 30);
+			offg.setFont(font);
+			offg.setColor(Color.BLACK);
+			offg.drawString(title, block*(xSize/3), block*(ySize/3));
 			
+			message = "Press the Enter";
+			font = new Font("Monospaced", Font.BOLD, 20);
+			offg.setFont(font);
+			offg.setColor(Color.RED);
+			offg.drawString(message, block*(xSize/40*9), block*(ySize/4*3));
+			
+			font = new Font("Monospaced", Font.PLAIN, 12);
+			offg.setFont(font);
+			offg.setColor(Color.RED.darker());
+			offg.drawString("Left:  S(←), D(↓), E(↑), F(→)", 2*block, block*(ySize+6));
+			offg.setColor(Color.BLUE.darker());
+			offg.drawString("Right: J(←), K(↓), I(↑), L(→)", 2*block, block*(ySize+9));
 		} else if ( g_state == 1 ) {
-			// 全体を背景色で塗りつぶす。
-			offg.clearRect(0, 0, width, height);
-			// 		if ( g_state == 0 ) {
-			//			offg.setFont(font);
-			//			offg.setColor(Color.RED.darker());
-			//			offg.drawString(message, 25*block, 25*block);
-			//		} else {
+			message = "Game started!";
+			font = new Font("Monospaced", Font.PLAIN, 12);
 			// 一旦、別の画像（オフスクリーン）に書き込む
 			int i, j;
 			for (i=0; i<xSize; i++) {
@@ -146,127 +124,125 @@ public class Dron extends JApplet implements Runnable, KeyListener, ActionListen
 			offg.drawString("Left:  S(←), D(↓), E(↑), F(→)", 2*block, block*(ySize+6));
 			offg.setColor(Color.BLUE.darker());
 			offg.drawString("Right: J(←), K(↓), I(↑), L(→)", 2*block, block*(ySize+9));
-			//		}
-			g.drawImage(img, 0, 0, this);  // 一気に画面にコピー
 		} else {
-			// 全体を背景色で塗りつぶす。
-			offg.clearRect(0, 0, width, height);
-			// 		if ( g_state == 0 ) {
-			//			offg.setFont(font);
-			//			offg.setColor(Color.RED.darker());
-			//			offg.drawString(message, 25*block, 25*block);
-			//		} else {
-			// 一旦、別の画像（オフスクリーン）に書き込む
-			int i, j;
-			for (i=0; i<xSize; i++) {
-				for (j=0; j<ySize; j++) {
-					offg.setColor(state[i][j]);
-					offg.fillRect(i*block, j*block, block, block);
-				}
-			}
+			// 結果の表示
+			font = new Font("Monospaced", Font.BOLD, 30);
+			offg.setFont(font);
+			offg.drawString(message, block*(xSize/3), block*(ySize/3));
+
+			message = "Replay the game ?";
+			font = new Font("Monospaced", Font.BOLD, 17);
 			offg.setFont(font);
 			offg.setColor(Color.GREEN.darker());
-			offg.drawString(message, 2*block, block*(ySize+3));
+			offg.drawString(message, block*(xSize/40*9), block*(ySize/3*2));
+
+			message = "Yes: Press the Enter";
+			font = new Font("Monospaced", Font.BOLD, 12);
+			offg.setFont(font);
+			offg.setColor(Color.RED.darker());
+			offg.drawString(message, block*(xSize/3), block*(ySize/4*3));
+			message = " No: Close the Window";
+			offg.setColor(Color.BLUE.darker());
+			offg.drawString(message, block*(xSize/3), block*(ySize/5*4));
+
+			font = new Font("Monospaced", Font.PLAIN, 12);
+			offg.setFont(font);
 			offg.setColor(Color.RED.darker());
 			offg.drawString("Left:  S(←), D(↓), E(↑), F(→)", 2*block, block*(ySize+6));
 			offg.setColor(Color.BLUE.darker());
 			offg.drawString("Right: J(←), K(↓), I(↑), L(→)", 2*block, block*(ySize+9));
-			//		}
-			g.drawImage(img, 0, 0, this);  // 一気に画面にコピー
 		}
-
-
+		g.drawImage(img, 0, 0, this);  // 一気に画面にコピー
 	}
 
 	public void run() {
-		System.out.println("d");
 		Thread thisThread = Thread.currentThread();
-		AudioClip bgm = getAudioClip(getDocumentBase(), "menuettm.mid");
-		bgm.loop();
+		AudioClip hit = getAudioClip(getDocumentBase(), "18am10.wav");
+		AudioClip bgm = getAudioClip(getDocumentBase(), "game_maoudamashii_7_event41.mid");
 		while (thisThread==thread) {
 			initialize();
 			requestFocus();
-			//			if ( g_state == 0 ) {
-			//				bt_st = new JButton("Start");
-			//				add(bt_st);
-			//				System.out.printf("スタート画面\n");
-			//				try{
-			//					Thread.sleep(10000);
-			//				} catch(InterruptedException e) {}
-			//				g_state = 1;
-			//				bgm.loop();
-			//			} else {
-			while (liveL&&liveR) {
-				xL += dxL; yL += dyL;
-				if (state[xL][yL]!=Color.WHITE) {
-					liveL = false;
-				} else {
-					state[xL][yL] = Color.RED;
-				}
-				xR += dxR; yR += dyR;
-				if (state[xR][yR]!=Color.WHITE) {
-					liveR = false;
-					if(xR==xL && yR==yL) {
+			if ( g_state == 1 ) {
+				bgm.loop();
+				while (liveL&&liveR) {
+					xL += dxL; yL += dyL;
+					if (state[xL][yL]!=Color.WHITE) {
 						liveL = false;
-						state[xL][yL] = Color.MAGENTA.darker();
-					}
-				} else {
-					state[xR][yR] = Color.BLUE;
-				}
-				if (!liveL) {
-					if (!liveR) {
-						g_state = 2;
-						bgm.stop();
-						message = "Draw!";
-						System.out.printf("終了画面\n");
 					} else {
-						countR++;
-						g_state = 2;
-						bgm.stop();
-						message = "R won!";
-						System.out.printf("終了画面\n");
-						stop();
+						state[xL][yL] = Color.RED;
 					}
-				} else if (!liveR) {
-					countL++;
-					g_state = 2;
-					bgm.stop();
-					message = "L won!";
-					System.out.printf("終了画面\n");
+					xR += dxR; yR += dyR;
+					if (state[xR][yR]!=Color.WHITE) {
+						liveR = false;
+						if(xR==xL && yR==yL) {
+							liveL = false;
+							state[xL][yL] = Color.MAGENTA.darker();
+						}
+					} else {
+						state[xR][yR] = Color.BLUE;
+					}
+					if (!liveL) {
+						if (!liveR) {
+							g_state = 2;
+							hit.play();
+							bgm.stop();
+							message = "Draw!";
+							offg.setColor(Color.YELLOW.darker());
+						} else {
+							countR++;
+							g_state = 2;
+							hit.play();
+							bgm.stop();
+							message = "R won!";
+							offg.setColor(Color.BLUE.darker());
+						}
+					} else if (!liveR) {
+						countL++;
+						g_state = 2;
+						hit.play();
+						bgm.stop();
+						message = "L won!";
+						offg.setColor(Color.RED.darker());
+					}
+					repaint();
+					try{
+						Thread.sleep(250);
+					} catch(InterruptedException e) {}
 				}
-				repaint();
 				try{
-					Thread.sleep(250);
+					Thread.sleep(1750);
 				} catch(InterruptedException e) {}
+			} else {
+
 			}
-			try{
-				Thread.sleep(1750);
-			} catch(InterruptedException e) {}
-			//			}
-
 		}
-
 	}
 
 	public void keyPressed(KeyEvent e) {
 		int key = e.getKeyCode();
-		switch (key) {
-		case 'S':  if ( bKeyL == 'F' ) { break; }					// 逆向き入力の即死回避
-		else { dxL =-1; dyL = 0; bKeyL = key; break;	} 	// 1P左
-		case 'D':  if ( bKeyL == 'E' ) { break; }  
-		else { dxL = 0; dyL = 1; bKeyL = key; break; }	// 1P下
-		case 'E':  if ( bKeyL == 'D' ) { break; }
-		else { dxL = 0; dyL =-1; bKeyL = key; break;	}	// 1P上
-		case 'F':  if ( bKeyL == 'S' ) { break; }
-		else { dxL = 1; dyL = 0; bKeyL = key; break;	}	// 1P右
-		case 'J':  if ( bKeyR == 'L' ) { break; }
-		else { dxR =-1; dyR = 0; bKeyR = key; break; }	// 2P左
-		case 'K':  if ( bKeyR == 'I' ) { break; }
-		else { dxR = 0; dyR = 1; bKeyR = key; break; }	// 2P下
-		case 'I':  if ( bKeyR == 'K' ) { break; }
-		else { dxR = 0; dyR =-1; bKeyR = key; break; }	// 2P上
-		case 'L':  if ( bKeyR == 'J' ) { break; }
-		else { dxR = 1; dyR = 0; bKeyR = key; break; }	// 2P右
+		if ( g_state == 0 || g_state == 2 ) {
+			if ( key == KeyEvent.VK_ENTER ) {
+				g_state = 1;
+			}
+		} else if ( g_state == 1 ){
+			switch (key) {
+			case 'S':  if ( bKeyL == 'F' ) { break; }					// 逆向き入力の即死回避
+			else { dxL =-1; dyL = 0; bKeyL = key; break;	} 	// 1P左
+			case 'D':  if ( bKeyL == 'E' ) { break; }  
+			else { dxL = 0; dyL = 1; bKeyL = key; break; }	// 1P下
+			case 'E':  if ( bKeyL == 'D' ) { break; }
+			else { dxL = 0; dyL =-1; bKeyL = key; break;	}	// 1P上
+			case 'F':  if ( bKeyL == 'S' ) { break; }
+			else { dxL = 1; dyL = 0; bKeyL = key; break;	}	// 1P右
+			case 'J':  if ( bKeyR == 'L' ) { break; }
+			else { dxR =-1; dyR = 0; bKeyR = key; break; }	// 2P左
+			case 'K':  if ( bKeyR == 'I' ) { break; }
+			else { dxR = 0; dyR = 1; bKeyR = key; break; }	// 2P下
+			case 'I':  if ( bKeyR == 'K' ) { break; }
+			else { dxR = 0; dyR =-1; bKeyR = key; break; }	// 2P上
+			case 'L':  if ( bKeyR == 'J' ) { break; }
+			else { dxR = 1; dyR = 0; bKeyR = key; break; }	// 2P右
+			}
 		}
 	}
 
