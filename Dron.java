@@ -38,7 +38,7 @@ public class Dron extends JApplet implements Runnable, KeyListener {
 
 	// スタート画面表示
 	private String title;
-	private int g_state;  // ゲームの状態 0:ゲーム開始前 1:ゲーム中 2:ゲーム終了
+	private int g_state;  // ゲームの状態 0:ゲーム開始前 1:ゲーム中 2:引き分け 3:R勝利 4:L勝利
 
 
 	private void initialize() {
@@ -136,6 +136,11 @@ public class Dron extends JApplet implements Runnable, KeyListener {
 			offg.drawString("Right: J(←), K(↓), I(↑), L(→)", 2*block, block*(ySize+9));
 		} else {
 			// 結果の表示
+			switch ( g_state ) {
+			case 2: message = "Draw!"; offg.setColor(Color.YELLOW.darker()); break;
+			case 3: message = "R won!"; offg.setColor(Color.BLUE.darker()); break;
+			case 4: message = "L won!"; offg.setColor(Color.RED.darker()); break;
+			}
 			font = new Font("Monospaced", Font.BOLD, 30);
 			offg.setFont(font);
 			offg.drawString(message, block*(xSize/3), block*(ySize/3));
@@ -151,7 +156,7 @@ public class Dron extends JApplet implements Runnable, KeyListener {
 			offg.setFont(font);
 			offg.setColor(Color.RED.darker());
 			offg.drawString(message, block*(xSize/3), block*(ySize/4*3));
-			message = " No: Close the Window";
+			message = "No : Close the Window";
 			offg.setColor(Color.BLUE.darker());
 			offg.drawString(message, block*(xSize/3), block*(ySize/5*4));
 
@@ -162,8 +167,8 @@ public class Dron extends JApplet implements Runnable, KeyListener {
 			offg.setColor(Color.BLUE.darker());
 			offg.drawString("Right: J(←), K(↓), I(↑), L(→)", 2*block, block*(ySize+9));
 		}
-		g.drawImage(img, 0, 0, this);  // 一気に画面にコピー
-		g.drawImage(img2, 0, block*(ySize+12), this);
+		offg.drawImage(img2, 0, block*(ySize+12), this);
+		g.drawImage(img, 0, 0, this);    // 一気に画面にコピー
 	}
 
 	public void run() {
@@ -206,23 +211,17 @@ public class Dron extends JApplet implements Runnable, KeyListener {
 							g_state = 2;
 							hit.play();
 							bgm.stop();
-							message = "Draw!";
-							offg.setColor(Color.YELLOW.darker());
 						} else {
 							countR++;
-							g_state = 2;
+							g_state = 3;
 							hit.play();
 							bgm.stop();
-							message = "R won!";
-							offg.setColor(Color.BLUE.darker());
 						}
 					} else if (!liveR) {
 						countL++;
-						g_state = 2;
+						g_state = 4;
 						hit.play();
 						bgm.stop();
-						message = "L won!";
-						offg.setColor(Color.RED.darker());
 					}
 					repaint();
 					try{
@@ -240,11 +239,11 @@ public class Dron extends JApplet implements Runnable, KeyListener {
 
 	public void keyPressed(KeyEvent e) {
 		int key = e.getKeyCode();
-		if ( g_state == 0 || g_state == 2 ) {
+		if ( g_state != 1 ) {
 			if ( key == KeyEvent.VK_ENTER ) {
 				g_state = 1;
 			}
-		} else if ( g_state == 1 ){
+		} else {
 			Random rnd = new Random();
 			dxA = num[rnd.nextInt(3)];
 			if(dxA == 0){
