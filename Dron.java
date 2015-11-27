@@ -18,12 +18,12 @@ public class Dron extends JApplet implements Runnable, KeyListener {
 	private int dxA, dyA;
 	private int dxL, dyL, dxR, dyR;
 	private boolean liveL, liveR;
-	private int countL, countR;
+	//private int countL, countR;
 	private Thread thread;
 	private String message;
 	private Font font;
-	private int turn_a = 1;
-	private int turn_b = 1;
+	//private int turn_a = 1;
+	//private int turn_b = 1;
 	private int num[] = {-1,1,0};
 
 	private Image img;     // �I�t�X�N���[���C���[�W
@@ -109,21 +109,14 @@ public class Dron extends JApplet implements Runnable, KeyListener {
 		while (thisThread==thread) {
 			initialize();
 			requestFocus();
-			/*add
-			Random rnd = new Random();
-	        int ran = rnd.nextInt(2);
-	        */
 			while (liveL&&liveR) {
-				//
+			
 				xA += dxA; yA += dyA;
 				
 				if (state[xA][yA]!=Color.WHITE) {
 					xA -= dxA; yA -= dyA;
-					state[xA][yA] = Color.YELLOW.darker();
 				}
 				state[xA][yA] = Color.BLACK;
-				//
-				
 				xL += dxL; yL += dyL;
 				if (state[xL][yL]!=Color.WHITE) {
 					liveL = false;
@@ -144,11 +137,11 @@ public class Dron extends JApplet implements Runnable, KeyListener {
 					if (!liveR) {
 						message = "Draw!";
 					} else {
-						countR++;
+						//countR++;
 						message = "R won!";
 					}
 				} else if (!liveR) {
-					countL++;
+					//countL++;
 					message = "L won!";
 				}
 				repaint();
@@ -165,16 +158,23 @@ public class Dron extends JApplet implements Runnable, KeyListener {
 	public void keyPressed(KeyEvent e) {
 		int key = e.getKeyCode();
 		//add
-		Random rnd = new Random();
-		dxA = num[rnd.nextInt(3)];
+		Random rnd = new Random(); //rand変数を作成
+		dxA = num[rnd.nextInt(3)]; //中心から始まるAIは、ユーザがキーをタイプする毎に動く。
         if(dxA == 0){
         	dyA = num[rnd.nextInt(2)];
         }
         else{
         	dyA = 0;
         }
-        //dyA = num[rnd.nextInt(4)];
-        //
+		while (state[xA+dxA][yA+dyA]!=Color.WHITE) {
+			dxA = num[rnd.nextInt(3)];
+        	if(dxA == 0){
+        		dyA = num[rnd.nextInt(2)];
+        	}
+        	else{
+        		dyA = 0;
+        	}
+		}
 		switch (key) {
 		case 'A':  dxL =-1; dyL = 0; break;
 		case 'S':  dxL = 0; dyL = 1; break;
@@ -184,16 +184,7 @@ public class Dron extends JApplet implements Runnable, KeyListener {
 		case 'J':  dxR = 0; dyR = 1; break;
 		case 'K':  dxR = 0; dyR =-1; break;
 		case 'L':  dxR = 1; dyR = 0; break;
-		/*
-		case 'A':  turn_a++; dxL =-1*turn_a; dyL = 0; break;
-		case 'S':  turn_a++; dxL = 0; dyL = 1*turn_a;  break;
-		case 'D':  turn_a++; dxL = 0; dyL =-1*turn_a;  break;
-		case 'F':  turn_a++; dxL = 1*turn_a; dyL = 0;  break;
-		case 'H':  turn_b += 0.2; dxR =-1*turn_b; dyR = 0;  break;
-		case 'J':  turn_b += 0.2; dxR = 0; dyR = 1*turn_b;  break;
-		case 'K':  turn_b += 0.2; dxR = 0; dyR =-1*turn_b;  break;
-		case 'L':  turn_b += 0.2; dxR = 1*turn_b; dyR = 0;  break;
-		*/
+
 		}
 	}
 
